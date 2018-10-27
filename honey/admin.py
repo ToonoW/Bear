@@ -5,7 +5,7 @@ from honey import models
 
 @admin.register(models.Honeycomb)
 class HoneycombAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('name', 'email', 'password', 'remaining_amount', 'is_checkin', 'last_modify')
 
 
 @admin.register(models.Honey)
