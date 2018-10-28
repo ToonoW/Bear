@@ -6,6 +6,7 @@ name = "tuna"
 [packages]
 requests-html = "*"
 faker = "*"
+django = "*"
 
 [dev-packages]
 

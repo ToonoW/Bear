@@ -4,9 +4,18 @@ import logging
 import requests_html
 from faker import Faker
 
+from honey.models import Honeycomb
+
 logger = logging.getLogger('honey')
 faker = Faker()
 session = requests_html.HTMLSession()
+
+
+def get_unique_email():
+    email = faker.email()
+    if Honeycomb.objects.filter(email=email).count() > 0:
+        return get_unique_email()
+    return email
 
 
 def _honeycomb_create(name, email, password, **kwargs):
@@ -21,16 +30,20 @@ def _honeycomb_create(name, email, password, **kwargs):
     }
     r = session.post('https://susanoocloud.com/auth/register', data=data)
     try:
-        if not '注册成功' in json.loads(r.text)['msg']:
+        msg = json.loads(r.text)['msg']
+        if not '注册成功' in msg:
+            print('email: {} . msg: {}'.format(email, msg))
             return None
         return (name, email, password)
     except Exception as e:
+        print(e)
         logger.error('Registe failure.', e)
         return None
 
 
 def honeycomb_create():
-    info = _honeycomb_create(faker.name(), faker.email(), faker.password(), qq=faker.random_number())
+    session.cookies.clear()
+    info = _honeycomb_create(faker.name(), get_unique_email(), faker.password(), qq=faker.random_number())
     return info
 
 
@@ -51,6 +64,7 @@ def _honeycomb_login(email, password):
 
 
 def honeycomb_login(email, password):
+    session.cookies.clear()
     return _honeycomb_login(email, password)
 
 
@@ -66,9 +80,30 @@ def _honeycomb_info():
 
 
 def honeycomb_info(email, password):
+    session.cookies.clear()
     if _honeycomb_login(email, password) is None:
         raise Exception('Login required.')
     return _honeycomb_info()
+
+
+def _honeycomb_checkin():
+    r = session.post('https://susanoocloud.com/user/checkin')
+    try:
+        msg = json.loads(r.text)['msg']
+        if '续命' in msg or '获得了' in msg:
+            return msg
+        else:
+            return None
+    except Exception as e:
+        logger.error('Checkin failure.', e)
+    return json.loads(r.text)
+
+
+def honeycomb_checkin(email, password):
+    session.cookies.clear()
+    if _honeycomb_login(email, password) is None:
+        raise Exception('Login required.')
+    return _honeycomb_checkin()
 
 
 def _honey_info():
@@ -88,13 +123,13 @@ def _honey_info():
     configs = []
     for node_infos, node_config in zip(nodes, nodes_json):
         name = node_infos[0]
-        load = int(node_infos[2][3:-1])
-        node_config['name'], node_config['load'] = name, load
+        node_config['name'] = name
         configs.append(node_config)
     return configs
 
 
 def honey_info(email, password):
+    session.cookies.clear()
     if _honeycomb_login(email, password) is None:
         raise Exception('Login required.')
     return _honey_info()

@@ -8,7 +8,7 @@ class Honeycomb(models.Model):
         verbose_name_plural = '蜂巢'
 
     name = models.CharField('用户名', max_length=64, null=True)
-    email = models.CharField('邮箱', max_length=64)
+    email = models.CharField('邮箱', max_length=64, unique=True)
     password = models.CharField('密码', max_length=64)
     remaining_amount = models.FloatField('剩余流量', default=0)
     is_checkin = models.BooleanField('签到', default=False)
