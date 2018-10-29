@@ -123,7 +123,9 @@ def _honey_info():
     configs = []
     for node_infos, node_config in zip(nodes, nodes_json):
         name = node_infos[0]
+        load = int(node_infos[1])
         node_config['name'] = name
+        node_config['load'] = load
         configs.append(node_config)
     return configs
 

@@ -18,6 +18,7 @@ class Command(BaseCommand):
                     server=config['server'],
                     server_port=config['server_port'],
                     password=config['password'],
+                    load=config['load'],
                     method=config['method'],
                     obfs=config['obfs'],
                     obfs_param=config['obfs_param'],
