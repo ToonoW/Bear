@@ -35,6 +35,7 @@ RUN apk del build-base gcc
 
 # -- Expose
 EXPOSE 80
+EXPOSE 1080
 
 # -- Entrypoint
 ENTRYPOINT ["/usr/bin/supervisord"]

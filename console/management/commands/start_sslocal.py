@@ -1,10 +1,11 @@
 import time
 import subprocess
+import json
 
 from django.core.management.base import BaseCommand, CommandError
 
 from console.models import WorkingQueue
-from honey.models import Honey
+from honey.models import Honey, Honeycomb
 
 
 class Command(BaseCommand):
@@ -16,9 +17,26 @@ class Command(BaseCommand):
             raise CommandError('启动失败，不存在可用节点。')
 
     def start_work(self, interval):
-        honey = WorkingQueue.objects.first()
+        honey = WorkingQueue.objects.first().honey
 
-        cmd = 'python ./shadowsocks/local.py -s {server} -p {server_port} -b 127.0.0.1 -l 1080 -k {password} -m {method} -o {obfs} -t 600'.format(
+        ss_config = {
+            'server': honey.server,
+            'server_port': honey.server_port,
+            'local_address': '127.0.0.1',
+            'local_port': 1080,
+            'timeout': 600,
+            'workers': 1,
+            'password': honey.password,
+            'method': honey.method,
+            'obfs': honey.obfs,
+            'obfs_param': honey.obfs_param,
+            'protocol': honey.protocol,
+            'protocol_param': honey.protocol_param,
+        }
+        with open('ss_bear.json', 'w') as f:
+            json.dump(ss_config, f, ensure_ascii=True)
+
+        cmd = 'python ./shadowsocks/local.py -c ./ss_bear.json'.format(
             server=honey.server,
             server_port=honey.server_port,
             password=honey.password,
@@ -39,7 +57,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         WorkingQueue.objects.all().delete()
-        WorkingQueue.objects.create(honey=Honey.objects.filter(honeycomb__remaining_amount__gt=0).first())
+        honeycomb = Honeycomb.objects.order_by('-remaining_amount').first()
+        WorkingQueue.objects.create(honey=Honey.objects.filter(honeycomb=honeycomb).first())
 
         self.pre_check()
         self.stdout.write('开始工作')
