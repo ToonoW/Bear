@@ -22,7 +22,7 @@ class Command(BaseCommand):
         ss_config = {
             'server': honey.server,
             'server_port': honey.server_port,
-            'local_address': '127.0.0.1',
+            'local_address': '0.0.0.0',
             'local_port': 1080,
             'timeout': 600,
             'workers': 1,
@@ -36,14 +36,8 @@ class Command(BaseCommand):
         with open('ss_bear.json', 'w') as f:
             json.dump(ss_config, f, ensure_ascii=True)
 
-        cmd = 'python ./shadowsocks/local.py -c ./ss_bear.json'.format(
-            server=honey.server,
-            server_port=honey.server_port,
-            password=honey.password,
-            method=honey.method,
-            obfs=honey.obfs,
-        )
-        p = subprocess.Popen(cmd)
+        cmd = 'python /app/shadowsocks/local.py -c /app/ss_bear.json'
+        p = subprocess.Popen(cmd, shell=True)
         try:
             while True:
                 self.stdout.write('工作中')
