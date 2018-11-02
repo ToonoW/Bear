@@ -12,19 +12,21 @@ qq = faker.random_number()
 
 session = requests_html.HTMLSession()
 
-r_register = session.post('https://susanoocloud.com/auth/register', data={
-    'email': email,
-    'name': name,
-    'passwd': passwd,
-    'repasswd': passwd,
-    'wechat': qq,
-    'imtype': 2,
-    'code': 0,
-})
-if r_register.status_code != 200:
-    raise Exception('注册失败')
-print('注册成功')
-print('email: {} , passwd: {}'.format(email, passwd))
+# r_register = session.post('https://susanoocloud.com/auth/register', data={
+#     'email': email,
+#     'name': name,
+#     'passwd': passwd,
+#     'repasswd': passwd,
+#     'wechat': qq,
+#     'imtype': 2,
+#     'code': 0,
+# })
+# if r_register.status_code != 200:
+#     raise Exception('注册失败')
+# print('注册成功')
+# print('email: {} , passwd: {}'.format(email, passwd))
+email = 'toono@qq.com'
+passwd = 'Fu2tXFnhwUe3FXk'
 
 r_login = session.post('https://susanoocloud.com/auth/login', data={
     'email': email,
@@ -45,6 +47,9 @@ else:
     r_checkin = session.post('https://susanoocloud.com/user/checkin')
     if r_checkin.status_code == 200:
         print('签到成功')
+
+subscription_url = r_user.html.xpath('//button[@class="copy-text btn btn-subscription"]/@data-clipboard-text')[0]
+print('订阅地址: {}'.format(subscription_url))
 
 result = r_user.html.search('剩余可用 {}% {}GB')
 print('剩余流量 {}% {}GB'.format(result[0], result[1]))

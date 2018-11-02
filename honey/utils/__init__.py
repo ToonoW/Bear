@@ -76,7 +76,8 @@ def _honeycomb_info():
     if r.html.search('今日已签到') is not None:
         is_checkin = True
     remaining_count = r.html.search('剩余可用 {}% {}GB')[1]
-    return (remaining_count, is_checkin)
+    subscription_url = r.html.xpath('//button[@class="copy-text btn btn-subscription"]/@data-clipboard-text')[0]
+    return (remaining_count, is_checkin, subscription_url)
 
 
 def honeycomb_info(email, password):

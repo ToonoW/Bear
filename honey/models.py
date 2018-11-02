@@ -13,6 +13,7 @@ class Honeycomb(models.Model):
     remaining_amount = models.FloatField('剩余流量', default=0)
     is_checkin = models.BooleanField('签到', default=False)
     last_modify = models.DateTimeField('最后修改', auto_now=True)
+    subscription_url = models.URLField('订阅地址', null=True)
 
     def __str__(self):
         return '{}, {}GB'.format(self.email, self.remaining_amount)

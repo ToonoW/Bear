@@ -9,9 +9,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         for honeycomb in Honeycomb.objects.all():
-            remaining_count, is_checkin = utils.honeycomb_info(honeycomb.email, honeycomb.password)
+            remaining_count, is_checkin, subscription_url = utils.honeycomb_info(honeycomb.email, honeycomb.password)
             honeycomb.remaining_amount = remaining_count
             honeycomb.is_checkin = is_checkin
+            honeycomb.subscription_url = subscription_url
             honeycomb.save()
             self.stdout.write('用户 {} 更新信息'.format(honeycomb.email))
         self.stdout.write('完成更新')
