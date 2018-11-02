@@ -7,6 +7,8 @@ name = "tuna"
 requests-html = "*"
 faker = "*"
 django = "*"
+django-getenv = "*"
+dj-database-url = "*"
 
 [dev-packages]
 
