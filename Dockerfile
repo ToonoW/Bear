@@ -8,7 +8,7 @@ ENV LANG=en_US.UTF-8 \
 RUN set -ex && \
     echo 'https://mirror.tuna.tsinghua.edu.cn/alpine/v3.8/main' > /etc/apk/repositories && \
     echo 'https://mirror.tuna.tsinghua.edu.cn/alpine/v3.8/community' >> /etc/apk/repositories && \
-    apk update && apk add --no-cache supervisor nginx linux-headers build-base gcc musl-dev libxslt-dev
+    apk update && apk add --no-cache supervisor nginx linux-headers build-base gcc musl-dev libxslt-dev mysql-dev
 
 RUN python -m pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --no-cache-dir pip==18.0 && \
     pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --no-cache-dir pipenv uwsgi
